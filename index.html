@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma Vocacional OrientaMaz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-panel: #111019;
+            --dark-text: #eae6f0;
+            --main-brand: #7052ff;
+            --soft-purple: #f3efff;
+            --clean-bg: #f9f8fc;
+            --body-text: #2b2930;
+            --muted-text: #686570;
+            --border-color: #e5e2eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--clean-bg);
+            color: var(--body-text);
+            display: flex;
+            min-height: 100vh;
+            flex-direction: row;
+            overflow-x: hidden;
+        }
+
+        /* --- Estructura Split Screen --- */
+        .sidebar-brand {
+            background-color: var(--dark-panel);
+            color: var(--dark-text);
+            width: 320px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .main-content {
+            margin-left: 320px;
+            flex: 1;
+            padding: 50px 40px;
+            max-width: 900px;
+        }
+
+        /* --- Elementos de la Barra Lateral Fija --- */
+        .project-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--main-brand);
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .sidebar-brand h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.1;
+            color: #ffffff;
+        }
+
+        .sidebar-brand p {
+            font-size: 0.9rem;
+            color: #a29db0;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+
+        .team-meta {
+            border-top: 1px solid #252333;
+            padding-top: 25px;
+        }
+
+        .team-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #77728a;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .developer-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: #dbd8e3;
+        }
+
+        /* --- Secciones Contenido Principal --- */
+        .section-wrapper {
+            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.5s ease-out;
+        }
+
+        .section-wrapper.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-wrapper h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark-panel);
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+        .section-wrapper h2::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--main-brand);
+            border-radius: 2px;
+        }
+
+        .intro-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--body-text);
+            margin-bottom: 25px;
+        }
+
+        /* --- Panel Asimétrico de Diagnóstico (Móvil/Crisis) --- */
+        .crisis-grid {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .crisis-card {
+            background: #ffffff;
+            border-left: 4px solid #ff5252;
+            padding: 20px;
+            flex: 1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .crisis-card.warning { border-left-color: #ff9f43; }
+        .crisis-card.info { border-left-color: var(--main-brand); }
+
+        .crisis-card .num {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: var(--dark-panel);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .crisis-card .desc {
+            font-size: 0.85rem;
+            color: var(--muted-text);
+            line-height: 1.3;
+        }
+
+        /* --- Consola Simulada para Metodología --- */
+        .console-box {
+            background: #1e1e24;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #a9b7c6;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+        }
+
+        .console-line {
+            margin-bottom: 12px;
+            font-size: 0.88rem;
+            line-height: 1.4;
+        }
+
+        .console-line .keyword { color: #cc7832; font-weight: bold; }
+        .console-line .string { color: #6a8759; }
+        .console-line .comment { color: #808080; font-style: italic; }
+
+        /* --- Tarjetas Horizontales (Interactividad Deslizante) --- */
+        .slider-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            scrollbar-width: thin;
+        }
+
+        .slider-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 22px;
+            border-radius: 10px;
+            min-width: 260px;
+            max-width: 260px;
+            flex-shrink: 0;
+            transition: border-color 0.3s;
+        }
+
+        .slider-card:hover {
+            border-color: var(--main-brand);
+        }
+
+        .slider-card i {
+            background: var(--soft-purple);
+            color: var(--main-brand);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .slider-card h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--dark-panel);
+        }
+
+        .slider-card p {
+            font-size: 0.85rem;
+            color: var(--muted-text);
+            line-height: 1.4;
+        }
+
+        /* --- Institución e Info Académica --- */
+        .academic-footer {
+            margin-top: 60px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--muted-text);
+        }
+
+        .academic-footer strong {
+            color: var(--dark-panel);
+        }
+
+        /* --- Adaptación Móvil Extrema --- */
+        @media (max-width: 850px) {
+            body { flex-direction: column; }
+            .sidebar-brand { width: 100%; position: relative; padding: 35px 20px; }
+            .main-content { margin-left: 0; padding: 40px 20px; }
+            .crisis-grid { flex-direction: column; }
+            .team-meta { margin-top: 30px; }
+            .academic-footer { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PANEL LATERAL FIJO (IDENTIDAD ÚNICA) -->
+    <aside class="sidebar-brand">
+        <div>
+            <span class="project-tag">Proyecto IA</span>
+            <h1>OrientaMaz</h1>
+            <p>Chatbot inteligente diseñado para optimizar las decisiones de carrera en la educación superior.</p>
+        </div>
+
+        <div class="team-meta">
+            <span class="team-title">Desarrollado por:</span>
+            <div class="developer-chip"><i class="fa-solid fa-code-branch" style="margin-right:6px; font-size:0.75rem; color:var(--main-brand);"></i> Zarek de Jesús Rodríguez González</div>
+            <div class="developer-chip"><i class="fa-solid fa-code-branch" style="margin-right:6px; font-size:0.75rem; color:var(--main-brand);"></i> Guevara Gurrola Juan Manuel</div>
+            <div class="developer-chip"><i class="fa-solid fa-code-branch" style="margin-right:6px; font-size:0.75rem; color:var(--main-brand);"></i> Osuna Osuna Carlos Eduardo</div>
+        </div>
+    </aside>
+
+    <!-- ÁREA DE CONTENIDO ASIMÉTRICO -->
+    <main class="main-content">
+
+        <!-- INTRODUCCIÓN -->
+        <section class="section-wrapper active">
+            <h2>Propósito del Sistema</h2>
+            <p class="intro-text">OrientaMaz nace como una alternativa automatizada para mitigar la desorientación escolar. Mediante procesamiento de lenguaje natural, la plataforma entabla conversaciones dinámicas con los estudiantes, traduciendo sus gustos cotidianos y aptitudes empíricas en perfiles profesionales viables.</p>
+        </section>
+
+        <!-- PROBLEMÁTICA (DISEÑO DE BLOQUES ASIMÉTRICOS) -->
+        <section class="section-wrapper active">
+            <h2>Métricas de la Problemática</h2>
+            <p class="intro-text" style="font-size: 0.95rem; color: var(--muted-text);">El impacto de una elección de carrera desinformada se refleja directamente en los indicadores tradicionales de deserción universitaria.</p>
+            
+            <div class="crisis-grid">
+                <div class="crisis-card">
+                    <span class="num">40%</span>
+                    <span class="desc">De la población estudiantil deserta o cambia de área académica durante los primeros ciclos formativos.</span>
+                </div>
+                <div class="crisis-card warning">
+                    <span class="num">60%</span>
+                    <span class="desc">De los jóvenes admite haber seleccionado su profesión bajo presiones del círculo familiar o social directo.</span>
+                </div>
+                <div class="crisis-card info">
+                    <span class="num">1 / 3</span>
+                    <span class="desc">Es la proporción de alumnos de nivel medio superior que logran acceder a asesoría vocacional personalizada en su entorno.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- METODOLOGÍA (SIMULACIÓN DE CONSOLA DE PROGRAMACIÓN) -->
+        <section class="section-wrapper active">
+            <h2>Etapas de Desarrollo</h2>
+            <div class="console-box">
+                <div class="console-line">
+                    <span class="keyword">step</span> 01_investigacion = <span class="string">"Recopilación analítica de las ofertas y planes de estudio universitarios locales"</span>;
+                </div>
+                <div class="console-line">
+                    <span class="keyword">step</span> 02_arquitectura = <span class="string">"Estructuración de FastAPI y acomplamiento de la API de Google Gemini como motor"</span>;
+                </div>
+                <div class="console-line">
+                    <span class="keyword">step</span> 03_frontend = <span class="string">"Desarrollo de entorno interactivo en React + Vite adaptado para entornos móviles"</span>;
+                </div>
+                <div class="console-line">
+                    <span class="keyword">step</span> 04_validaciones = <span class="string">"Implementación de entornos de prueba controlados con usuarios reales y feedback"</span>; <span class="comment">// Ajustes finales</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULTADOS (CARRUSEL DESLIZANTE HORIZONTAL) -->
+        <section class="section-wrapper active">
+            <h2>Impacto y Resultados</h2>
+            <p class="intro-text" style="font-size: 0.95rem; color: var(--muted-text); margin-bottom: 15px;">Desliza horizontalmente para examinar las metas alcanzadas por el ecosistema:</p>
+            
+            <div class="slider-container">
+                <div class="slider-card">
+                    <i class="fa-solid fa-brain"></i>
+                    <h3>Análisis Contextual</h3>
+                    <p>El bot responde adaptando la recomendación exclusivamente al interés real del alumno, sin sesgos externos.</p>
+                </div>
+                <div class="slider-card">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <h3>Seguridad y Foco</h3>
+                    <p>Filtro de instrucciones robusto que impide desviar al bot hacia conversaciones o temáticas ajenas a la vocación.</p>
+                </div>
+                <div class="slider-card">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <h3>Disponibilidad Total</h3>
+                    <p>Acceso asincrónico instantáneo que democratiza la orientación para cualquier estudiante con conexión a red.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE CIERRE ACADÉMICO -->
+        <footer class="academic-footer">
+            <div>
+                <strong>Universidad Autónoma de Sinaloa</strong><br>
+                <span>Facultad de Informática Mazatlán</span>
+            </div>
+            <div style="text-align: right;">
+                <span>Asesor: Dr. Héctor Joaquín Escobar Cuevas</span><br>
+                <strong>2026</strong>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // Animación sutil de entrada para desmarcarse del comportamiento clásico
+        document.addEventListener("DOMContentLoaded", () => {
+            const wrappers = document.querySelectorAll('.section-wrapper');
+            wrappers.forEach((wrapper, index) => {
+                setTimeout(() => {
+                    wrapper.classList.add('active');
+                }, index * 120);
+            });
+        });
+    </script>
+</body>
+</html>
